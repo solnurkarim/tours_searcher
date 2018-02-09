@@ -38,7 +38,8 @@ $(document).ready(function(){
 		for(i=0; i<cityList.length; i++){
 			let city = cityList[i].Name;
 			cityIdList[city] = cityList[i].Id;
-			$('#city').append('<option>'+ city +'</option>');
+			// загрузка всех городов в список выбора
+			// $('#city').append('<option>'+ city +'</option>');
 		}
 	});
 
@@ -54,7 +55,8 @@ $(document).ready(function(){
 
 	// обработчик выбора города вылета
 	$('#city').change(function(){
-		cityTagSelected = this.value;
+		console.log($('#city option:selected').text());
+		cityTagSelected = $('#city option:selected').text();
 		cityTagSelectedId = cityIdList[cityTagSelected];
 		loadCountryTagList();
 	});
