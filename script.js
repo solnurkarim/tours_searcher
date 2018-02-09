@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	const source = 'http://module.sletat.ru/Main.svc/';
+	const source = 'https://module.sletat.ru/Main.svc/';
 	let cityList;
 	let cityTagSelected;
 	let cityTagSelectedId;
