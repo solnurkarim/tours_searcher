@@ -15,7 +15,10 @@ $(document).ready(function(){
 	let resortTagSelectedId;
 	let resortIdList = new Object();
 
-	let starsQueries = '';
+	let hotelStarsList;
+	let hotelStarsTagSelected;
+	let hotelStarsTagSelectedId;
+	let hotelStarsIdList = new Object();
 
 	let hotelList;
 	let hotelTagSelected;
@@ -29,7 +32,7 @@ $(document).ready(function(){
 
 	let tourDatesList;
 
-	// загрузка списка стран
+	// загрузка списка городов вылета
 	$.get(source + 'GetDepartCities?', function(data){
 		cityList = data.GetDepartCitiesResult.Data;
 		for(i=0; i<cityList.length; i++){
@@ -39,7 +42,7 @@ $(document).ready(function(){
 		}
 	});
 
-	// загрузка списка типов питания
+	// загрузка списка всех возможных типов питания
 	$.get(source + 'GetMeals?', function(data){
 		mealsList = data.GetMealsResult.Data;
 		for(i=0; i<mealsList.length; i++){
@@ -48,7 +51,6 @@ $(document).ready(function(){
 			$('#meals').append('<option>'+ meals +'</option>');
 		}
 	});
-
 
 	// обработчик выбора города вылета
 	$('#city').change(function(){
@@ -97,49 +99,37 @@ $(document).ready(function(){
 		if(resortTagSelectedId == undefined) {
 			resortTagSelectedId = '';
 		}
-		loadHotelTagList();
+		loadHotelStarsTagList();
 		loadTourDatesTagList();
 	});
 
-	// обработчик выбранных категорий отелей.
-	// Заменить на добавление кодов категорий в массив с последующим 
-	// объединением элементов массива в строку через разделитель.
-	// Добавить остальные категории отелей.
-	$('input:checkbox').change(function(){
-		
-			starsQueries = '';
-			if( $('#two-stars').is(':checked') ){
-				starsQueries += '&stars=401';
+	// загрузка категорий отелей по выбранному курорту
+	function loadHotelStarsTagList() {
+		$('#hotel-stars').html('<option>Категории отелей</option');
+		$.get(source + 'GetHotelStars?countryId=' + countryTagSelectedId + "&towns=" + resortTagSelectedId, function(data){
+			hotelStarsList = data.GetHotelStarsResult.Data;
+			for(i=0; i<hotelStarsList.length; i++){
+				let hotelStars = hotelStarsList[i].Name;
+				hotelStarsIdList[hotelStars] = hotelStarsList[i].Id;
+				$('#hotel-stars').append('<option>'+ hotelStars +'</option>');
 			}
-			if( $('#three-stars').is(':checked') ){
-				if( $('#two-stars').is(':checked') ){
-					starsQueries += ',402';
-				} else {
-					starsQueries += '&stars=402';
-				}
-			}
-			if( $('#four-stars').is(':checked') ){
-				if( $('#three-stars').is(':checked') || $('#two-stars').is(':checked') ){
-					starsQueries += ',403';
-				} else {
-					starsQueries += '&stars=403';
-				}
-			}
-			if( $('#five-stars').is(':checked') ){
-				if( $('#four-stars').is(':checked') || $('#three-stars').is(':checked') || $('#two-stars').is(':checked') ){
-					starsQueries += ',404';
-				} else {
-					starsQueries += '&stars=404';
-				}
-			}
-			loadHotelTagList();
-	});
+		});
+	}
 
+	// обработчик выбора категории отелей
+	$('#hotel-stars').change(function(){
+		hotelStarsTagSelected = this.value;
+		hotelStarsTagSelectedId = hotelStarsIdList[hotelStarsTagSelected];
+		if(hotelStarsTagSelectedId == undefined) {
+			hotelStarsTagSelectedId = '';
+		}
+		loadHotelTagList();
+	});
 	
 	// загрузка списка отелей по выбранному курорту
 	function loadHotelTagList() {
 		$('#hotel').html('<option>Отели</option');
-		$.get(source + 'GetHotels?countryId=' + countryTagSelectedId + "&towns=" + resortTagSelectedId + starsQueries + '&all=-1', function(data){
+		$.get(source + 'GetHotels?countryId=' + countryTagSelectedId + "&towns=" + resortTagSelectedId + '&stars='+ hotelStarsTagSelectedId + '&all=-1', function(data){
 			hotelList = data.GetHotelsResult.Data;
 			for(i=0; i<hotelList.length; i++){
 				let hotel = hotelList[i].Name;
@@ -150,6 +140,7 @@ $(document).ready(function(){
 	}
 
 	// загрузка дат вылета по выбранному курорту
+	// подлежит к удалению
 	function loadTourDatesTagList() {
 		$('#tour-dates').html('<option>Доступные даты тура</option');
 		$.get(source + 'GetTourDates?dptCityId=' + cityTagSelectedId + "&countryId=" + countryTagSelectedId + '&resorts=' + resortTagSelectedId, function(data){
@@ -160,7 +151,4 @@ $(document).ready(function(){
 			}
 		});
 	}
-
-	
-
 });
