@@ -3,37 +3,92 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Поисковик туров</title>
+	<style>
+		input, select, label, button {
+			cursor: pointer;
+		}
+	</style>
 	<script src="jquery-3.2.1.min.js"></script>
 	<script src="script.js"></script>
 </head>
 <body>
+<<<<<<< HEAD
 	<select name="" id="city">
 		<option value="">Города вылета</option>
 		<option value="">Алматы</option>
+=======
+	
+	<select id="city">
+		<option value="reset">Города вылета</option>
+>>>>>>> bk
 	</select>
 	<br>
 	<select name="" id="country">
-		<option value="">Направления</option>
+		<option value="reset">Направления</option>
 	</select>
 	<br>
 	<select name="" id="resort">
-		<option value="">Курорты</option>
+		<option value="reset">Курорты</option>
 	</select>
 	<br>
 	<select name="" id="hotel-stars">
 		<option value="">Категории отелей</option>
+<<<<<<< HEAD
 	</select>
+=======
+	</select> -->
+	<div>Категории отелей</div>
+	<input type="checkbox" id="400" value="400" disabled>
+	<label for="400">1*</label>
+	<br>
+
+	<input type="checkbox" id="401" value="401" disabled>
+	<label for="401">2*</label>
+	<br>
+
+	<input type="checkbox" id="402" value="402" disabled>
+	<label for="402">3*</label>
+	<br>
+
+	<input type="checkbox" id="403" value="403" disabled>
+	<label for="403">4*</label>	
+	<br>
+
+	<input type="checkbox" id="404" value="404" disabled>
+	<label for="404">5*</label>
+	<br>
+
+	<input type="checkbox" id="405" value="405" disabled>
+	<label for="405">Apts</label>
+	<br>
+
+	<input type="checkbox" id="406" value="406" disabled>
+	<label for="406">Villas</label>
+>>>>>>> bk
 	<br>
 	<select name="" id="hotel">
-		<option value="">Отели</option>
+		<option value="reset">Отели</option>
 	</select>
 	<br>
 	<select name="" id="meals">
-		<option value="">Типы питания</option>
+		<option value="reset">Типы питания</option>
 	</select>
 	<br>
 	<select name="" id="tour-dates">
-		<option value="">Доступные даты тура</option>
+		<option value="reset">Доступные даты тура</option>
 	</select>
+	<br><br>
+	<label>login:
+		<input type="text" name="login" id="login">
+	</label>
+	<label>password:
+		<input type="password" name="pass" id="pass">
+	</label>
+	<button id="search">Поиск</button>
+
+	<p id="tour-results">
+		Введите логин и пароль для загрузки данных
+	</p>
+	
 </body>
 </html>

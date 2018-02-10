@@ -15,6 +15,8 @@ $(document).ready(function(){
 	let resortTagSelectedId;
 	let resortIdList = new Object();
 
+	let starsQuery = '';
+
 	let hotelStarsList;
 	let hotelStarsTagSelected;
 	let hotelStarsTagSelectedId;
@@ -32,7 +34,79 @@ $(document).ready(function(){
 
 	let tourDatesList;
 
-	// загрузка списка городов вылета
+	let login;
+	let password;
+
+
+	// отключение меню по порядку.
+	// либо разместить обработчики здесь, либо убрать switch
+	// и разместить вызовы функций в обработчиках ниже
+	$('select').change(function(){
+		console.log(this.id);
+		switch(this.id){
+			case 'city':
+				disableCountries();
+			case 'country':
+				disableResorts();
+			case 'resort':
+				disableHotelCategories();
+				disableHotels();
+				disableTourDates();
+			case 'hotel':
+				// disableMeals();
+				// loadMealsTagList();
+				hotelTagSelected = this.value;
+				hotelTagSelectedId = hotelIdList[hotelTagSelected];
+				$('#meals').prop('disabled', false).val('reset');
+			case 'meals':
+				mealsTagSelected = this.value;
+				mealsTagSelectedId = mealsIdList[mealsTagSelected];
+		}
+	});
+
+	// убрать в load'ах методы .html()?
+	// .html() заменить на .val('reset')?
+	disableCountries();
+
+	function disableCountries() {
+		$('#country').prop('disabled', true);
+		$('#country').html('<option>Направление</option>');
+		disableResorts();
+	}
+
+	function disableResorts() {
+		$('#resort').prop('disabled', true);
+		$('#resort').html('<option>Курорты</option>');
+		disableHotelCategories();
+		disableHotels();
+		disableTourDates();
+		disableMeals();
+	}
+
+	function disableHotelCategories() {
+		$('input:checkbox').each(function(){
+			$(this).prop('disabled', true);
+			$(this).prop('checked', false);
+		});
+	}
+
+	function disableHotels() {
+		$('#hotel').prop('disabled', true);
+		$('#hotel').html('<option>Отели</option>');
+		disableMeals();
+	}
+
+	function disableMeals() {
+		$('#meals').prop('disabled', true).val('reset');
+	}
+
+	function disableTourDates() {
+		$('#tour-dates').prop('disabled', true);
+		$('#tour-dates').html('<option>Доступные даты тура</option>');
+	}
+
+
+	// загрузка списка города вылета
 	$.get(source + 'GetDepartCities?', function(data){
 		cityList = data.GetDepartCitiesResult.Data;
 		for(i=0; i<cityList.length; i++){
@@ -50,6 +124,7 @@ $(document).ready(function(){
 			let meals = mealsList[i].Name;
 			mealsIdList[meals] = mealsList[i].Id;
 			$('#meals').append('<option>'+ meals +'</option>');
+				
 		}
 	});
 
@@ -58,12 +133,13 @@ $(document).ready(function(){
 		console.log($('#city option:selected').text());
 		cityTagSelected = $('#city option:selected').text();
 		cityTagSelectedId = cityIdList[cityTagSelected];
+		$('#country').prop('disabled', false);
 		loadCountryTagList();
 	});
 
 	// загрузка списка стран по выбранному городу вылета
 	function loadCountryTagList() {
-		$('#country').html('<option>Направление</option');
+		$('#country').html('<option>Направление</option>');
 		$.get(source + 'GetCountries?townFromId=' + cityTagSelectedId, function(data){
 			countryList = data.GetCountriesResult.Data;
 			for (i=0; i<countryList.length; i++) {
@@ -78,12 +154,14 @@ $(document).ready(function(){
 	$('#country').change(function(){
 		countryTagSelected = this.value;
 		countryTagSelectedId = countryIdList[countryTagSelected];
+		$('#resort').val('reset');
+		$('#resort').prop('disabled', false);
 		loadResortTagList();
 	});
 
 	// загрузка списка курортов по выбранному направлению
 	function loadResortTagList() {
-		$('#resort').html('<option>Курорт</option');
+		$('#resort').html('<option>Курорты</option>');
 		$.get(source + 'GetCities?countryId=' + countryTagSelectedId, function(data){
 			resortList = data.GetCitiesResult.Data;
 			for(i=0; i<resortList.length; i++){
@@ -98,40 +176,71 @@ $(document).ready(function(){
 	$('#resort').change(function(){
 		resortTagSelected = this.value;
 		resortTagSelectedId = resortIdList[resortTagSelected];
-		if(resortTagSelectedId == undefined) {
+		if(!resortTagSelectedId) {
 			resortTagSelectedId = '';
+			$('input:checkbox').each(function(){
+				$(this).prop('checked', false);
+				$(this).prop('disabled', true);
+			});
+			return;
 		}
-		loadHotelStarsTagList();
+
+		$('select').each(function(){
+			$(this).prop('disabled', false);
+		});
+		$('#hotel').prop('disabled', false);
+		$('#tour-dates').prop('disabled', false);
+		loadHotelStarsList();
 		loadTourDatesTagList();
 	});
 
-	// загрузка категорий отелей по выбранному курорту
-	function loadHotelStarsTagList() {
-		$('#hotel-stars').html('<option>Категории отелей</option');
+	// загрузка доступных категорий отелей по выбранному курорту,
+	// разблокировка соответствующих checkbox'ов
+	function loadHotelStarsList() {
+		hotelStarsIdList = {};
 		$.get(source + 'GetHotelStars?countryId=' + countryTagSelectedId + "&towns=" + resortTagSelectedId, function(data){
 			hotelStarsList = data.GetHotelStarsResult.Data;
 			for(i=0; i<hotelStarsList.length; i++){
-				let hotelStars = hotelStarsList[i].Name;
+				let hotelStars = hotelStarsList[i].Id;
 				hotelStarsIdList[hotelStars] = hotelStarsList[i].Id;
-				$('#hotel-stars').append('<option>'+ hotelStars +'</option>');
+			}
+
+			let starsId = 400;
+			while(starsId <= 406){
+				if(hotelStarsIdList[starsId]){
+					$('#'+starsId).prop('disabled', false);
+				} else {
+					$('#'+starsId).prop('disabled', true);
+				}
+				starsId++;
 			}
 		});
 	}
 
-	// обработчик выбора категории отелей
-	$('#hotel-stars').change(function(){
-		hotelStarsTagSelected = this.value;
-		hotelStarsTagSelectedId = hotelStarsIdList[hotelStarsTagSelected];
-		if(hotelStarsTagSelectedId == undefined) {
-			hotelStarsTagSelectedId = '';
-		}
+	// обработчик выбора категорий отелей
+	// $('input:checkbox').change(function(){
+	// 	starsArray = [];
+	// 	$('input:checkbox').each(function(){
+	// 		if( $(this).is(':checked') ){
+	// 			starsArray.push($(this).attr('id'));
+	// 		}
+	// 	});
+	// 	starsQuery = '&stars=' + starsArray.join();
+	// 	loadHotelTagList();
+	// });
+
+	// обработчик выбора категорий отелей
+	$('input:checkbox').on('change', function(){
+		starsQuery = '&stars=' + $('input:checked').map(function(){
+			return this.value;
+		}).get().join(",");
 		loadHotelTagList();
 	});
 	
 	// загрузка списка отелей по выбранному курорту
 	function loadHotelTagList() {
-		$('#hotel').html('<option>Отели</option');
-		$.get(source + 'GetHotels?countryId=' + countryTagSelectedId + "&towns=" + resortTagSelectedId + '&stars='+ hotelStarsTagSelectedId + '&all=-1', function(data){
+		$('#hotel').html('<option>Отели</option>');
+		$.get(source + 'GetHotels?countryId=' + countryTagSelectedId + "&towns=" + resortTagSelectedId + starsQuery + '&all=-1', function(data){
 			hotelList = data.GetHotelsResult.Data;
 			for(i=0; i<hotelList.length; i++){
 				let hotel = hotelList[i].Name;
@@ -144,7 +253,7 @@ $(document).ready(function(){
 	// загрузка дат вылета по выбранному курорту
 	// подлежит к удалению
 	function loadTourDatesTagList() {
-		$('#tour-dates').html('<option>Доступные даты тура</option');
+		$('#tour-dates').html('<option>Доступные даты тура</option>');
 		$.get(source + 'GetTourDates?dptCityId=' + cityTagSelectedId + "&countryId=" + countryTagSelectedId + '&resorts=' + resortTagSelectedId, function(data){
 			tourDatesList = data.GetTourDatesResult.Data.dates;
 			for(i=0; i<tourDatesList.length; i++){
@@ -153,4 +262,13 @@ $(document).ready(function(){
 			}
 		});
 	}
+
+	// тестовая загрузка туров
+	$('#search').click(function(){
+		login = 'login=' + $('#login').val();
+		password = '&password=' + $('#pass').val();
+		$.get(source + 'GetTours?' + login + password + '&cityFromId=' + cityTagSelectedId + '&countryId=' + countryTagSelectedId + '&cities=' + resortTagSelectedId + '&meals=' + mealsTagSelectedId + starsQuery + '&hotels=' + hotelTagSelectedId, function(data){
+			$('#tour-results').text(JSON.stringify(data));
+		});
+	});
 });
