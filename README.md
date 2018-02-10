@@ -1,3 +1,3 @@
 # tours_searcher
 
-Ссылка на просмотр: https://solspyre.github.io/tour_searcher
+Ссылка на просмотр: https://solspyre.github.io/tours_searcher
