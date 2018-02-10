@@ -46,21 +46,25 @@ $(document).ready(function(){
 		switch(this.id){
 			case 'city':
 				disableCountries();
+				break;
 			case 'country':
 				disableResorts();
+				break;
 			case 'resort':
 				disableHotelCategories();
 				disableHotels();
 				disableTourDates();
+				disableMeals();
+				break;
 			case 'hotel':
-				// disableMeals();
-				// loadMealsTagList();
 				hotelTagSelected = this.value;
 				hotelTagSelectedId = hotelIdList[hotelTagSelected];
-				$('#meals').prop('disabled', false).val('reset');
+				$('#meals').val('reset');
+				break;
 			case 'meals':
 				mealsTagSelected = this.value;
 				mealsTagSelectedId = mealsIdList[mealsTagSelected];
+				break;
 		}
 	});
 
@@ -93,7 +97,6 @@ $(document).ready(function(){
 	function disableHotels() {
 		$('#hotel').prop('disabled', true);
 		$('#hotel').html('<option>Отели</option>');
-		disableMeals();
 	}
 
 	function disableMeals() {
@@ -104,7 +107,6 @@ $(document).ready(function(){
 		$('#tour-dates').prop('disabled', true);
 		$('#tour-dates').html('<option>Доступные даты тура</option>');
 	}
-
 
 	// загрузка списка города вылета
 	$.get(source + 'GetDepartCities?', function(data){
@@ -124,13 +126,11 @@ $(document).ready(function(){
 			let meals = mealsList[i].Name;
 			mealsIdList[meals] = mealsList[i].Id;
 			$('#meals').append('<option>'+ meals +'</option>');
-				
 		}
 	});
 
 	// обработчик выбора города вылета
 	$('#city').change(function(){
-		console.log($('#city option:selected').text());
 		cityTagSelected = $('#city option:selected').text();
 		cityTagSelectedId = cityIdList[cityTagSelected];
 		$('#country').prop('disabled', false);
@@ -185,10 +185,11 @@ $(document).ready(function(){
 			return;
 		}
 
-		$('select').each(function(){
-			$(this).prop('disabled', false);
-		});
+		// $('select').each(function(){
+		// 	$(this).prop('disabled', false);
+		// });
 		$('#hotel').prop('disabled', false);
+		$('#meals').prop('disabled', false);
 		$('#tour-dates').prop('disabled', false);
 		loadHotelStarsList();
 		loadTourDatesTagList();
