@@ -34,8 +34,7 @@ $(document).ready(function(){
 
 	let tourDatesList;
 
-	let login;
-	let password;
+	let tourData;
 
 
 	// отключение меню по порядку.
@@ -64,7 +63,6 @@ $(document).ready(function(){
 			case 'meals':
 				mealsTagSelected = this.value;
 				mealsTagSelectedId = mealsIdList[mealsTagSelected];
-				break;
 		}
 	});
 
@@ -266,10 +264,68 @@ $(document).ready(function(){
 
 	// тестовая загрузка туров
 	$('#search').click(function(){
-		login = 'login=' + $('#login').val();
-		password = '&password=' + $('#pass').val();
+		let login = 'login=' + $('#login').val();
+		let password = '&password=' + $('#pass').val();
 		$.get(source + 'GetTours?' + login + password + '&cityFromId=' + cityTagSelectedId + '&countryId=' + countryTagSelectedId + '&cities=' + resortTagSelectedId + '&meals=' + mealsTagSelectedId + starsQuery + '&hotels=' + hotelTagSelectedId, function(data){
-			$('#tour-results').text(JSON.stringify(data));
+			// $('#tour-results').text(JSON.stringify(data));
+			$('#tours-wrapper').empty();
+			if(!data.GetToursResult.ErrorMessage) {
+				console.log('Data get succeeded');
+				tourData = data.GetToursResult.Data.aaData;
+				
+				let tourIndex = 0;
+				let tourIndexDataArray = [0,6,7,8,9,10,11,12,13,14,15,19];
+				while(tourIndex < tourData.length) {
+					let tourIndexData = 0;
+					$('#tours-wrapper').append('<div class="tour-container"></div>');
+					while(tourIndexData < tourIndexDataArray.length) {
+						let tourContData = '';
+						switch(tourIndexData) {
+							case 0:
+								tourContData = 'pricing-id';
+								break;
+							case 6:
+								tourContData = 'tour-name';
+								break;
+							case 7:
+								tourContData = 'hotel-name';
+								break;
+							case 8:
+								tourContData = 'hotel-category';
+								break;
+							case 9:
+								tourContData = 'room-type';
+								break;
+							case 10:
+								tourContData = 'meals-type';
+								break;
+							case 11:
+								tourContData = 'positioning-type';
+								break;
+							case 12:
+								tourContData = 'departure-date';
+								break;
+							case 13:
+								tourContData = 'arrival-date';
+								break;
+							case 14:
+								tourContData = 'tour-nights';
+								break;
+							case 15:
+								tourContData = 'tour-price';
+								break;
+							case 19:
+								tourContData = 'resort-name';
+								break;
+							default:
+								tourContData = 'tour-data';
+						}
+						$('.tour-container')[tourIndex].innerHTML += '<div class="' + tourContData + '">' + tourData[tourIndex][tourIndexData] + '</div>';
+						tourIndexData++;
+					}
+					tourIndex++;
+				}
+			}
 		});
 	});
 });
