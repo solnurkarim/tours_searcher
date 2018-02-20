@@ -25,6 +25,10 @@
 		.tour-container:nth-child(odd) {
 			background-color: #ccc;
 		}
+
+		#login, #pass {
+			visibility: hidden;
+		}
 	</style>
 	<script src="jquery-3.2.1.min.js"></script>
 	<script src="script.js"></script>
@@ -97,14 +101,13 @@
 		<option value="reset">Доступные даты тура</option>
 	</select>
 	<br><br>
+	<button id="search">Поиск</button>
 	<label>login:
 		<input type="text" name="login" id="login">
 	</label>
 	<label>password:
 		<input type="password" name="pass" id="pass">
 	</label>
-	<button id="search">Поиск</button>
-
 	<div id="tours-wrapper">
 		
 	</div>
