@@ -113,7 +113,7 @@ $(document).ready(function(){
 			let city = cityList[i].Name;
 			cityIdList[city] = cityList[i].Id;
 			// загрузка всех городов в список выбора
-			// $('#city').append('<option>'+ city +'</option>');
+			$('#city').append('<option>'+ city +'</option>');
 		}
 	});
 
