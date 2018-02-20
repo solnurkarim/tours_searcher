@@ -4,26 +4,45 @@
 	<meta charset="UTF-8">
 	<title>Поисковик туров</title>
 	<style>
+		body {
+			font-family: sans-serif;
+		}
 		input, select, label, button {
 			cursor: pointer;
 		}
+		
+		h3 {
+			text-align: center;
+		}
 
 		.tour-container {
-			border: 1px solid #ccc;
+			border: 1px solid #000;
 			padding: 10px 30px;
 			width: 50%;
 			margin-top: 10px;
 		}
 
 		.tour-container:nth-child(odd) {
-			background-color: orange;
+			background-color: #ccc;
 		}
 	</style>
 	<script src="jquery-3.2.1.min.js"></script>
 	<script src="script.js"></script>
 </head>
 <body>
-	
+	<h3>
+		Поисковик туристических туров. 
+	</h3>
+	<div>
+		Для загрузки данных о турах используется демо-версия API сервиса сравнения туров. 
+	</div>
+	<div>
+		Возвращаются данные туров по направлению Египет > Шарм-Эль-Шейх > 3* отели.
+	</div>
+	<div>
+		Загрузка данных по вылетам доступны не по всем направлениям.
+	</div>
+	<br><br>
 	<select id="city">
 		<option value="reset">Города вылета</option>
 		<option value="reset">Алматы</option>
@@ -74,16 +93,16 @@
 		<option value="reset">Типы питания</option>
 	</select>
 	<br>
-<!-- 	<select name="" id="tour-dates">
+	<select name="" id="tour-dates">
 		<option value="reset">Доступные даты тура</option>
-	</select> -->
+	</select>
 	<br><br>
-	<!-- <label>login:
+	<label>login:
 		<input type="text" name="login" id="login">
 	</label>
 	<label>password:
 		<input type="password" name="pass" id="pass">
-	</label> -->
+	</label>
 	<button id="search">Поиск</button>
 
 	<div id="tours-wrapper">
